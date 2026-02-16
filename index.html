@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz do Jorge 😄</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background:#111;
+      color:white;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      margin:0;
+      transition: background 0.5s;
+    }
+
+    .box {
+      width: 90%;
+      max-width: 520px;
+      background:#1c1c1c;
+      padding:25px;
+      border-radius:18px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      text-align:center;
+    }
+
+    h1 {
+      margin-top:0;
+      font-size:26px;
+    }
+
+    .placar {
+      font-size:14px;
+      opacity: 0.8;
+      margin-top: -8px;
+      margin-bottom: 12px;
+    }
+
+    .pergunta {
+      font-size:18px;
+      margin: 18px 0;
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    /* Cores por matéria */
+    .matematica { background: #3498db; color: white; }
+    .portugues  { background: #9b59b6; color: white; }
+    .fisica     { background: #e67e22; color: white; }
+    .pessoal    { background: linear-gradient(90deg, #000000, #2980b9); color:white; }
+
+    button {
+      width:100%;
+      margin-top:10px;
+      padding:12px;
+      border:none;
+      border-radius:12px;
+      font-size:16px;
+      cursor:pointer;
+      transition: 0.2s;
+    }
+
+    .opcao {
+      background:#2b2b2b;
+      color:white;
+    }
+
+    .opcao:hover {
+      background:#3a3a3a;
+    }
+
+    .btn {
+      background:#00b894;
+      color:black;
+      font-weight:bold;
+    }
+
+    .resultado {
+      margin-top:15px;
+      font-size:18px;
+      font-weight:bold;
+    }
+
+    /* Tela inicial feliz */
+    .tela-inicial {
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:20px;
+      animation: aparecer 1s ease-in-out;
+    }
+
+    @keyframes aparecer {
+      from { opacity:0; transform: scale(0.9); }
+      to { opacity:1; transform: scale(1); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <!-- TELA INICIAL -->
+    <div id="telaInicial" class="tela-inicial">
+      <h1>Bem-vindo ao Quiz do Jorge 😄</h1>
+      <p>Teste seus conhecimentos e descubra mais sobre mim!</p>
+      <button class="btn" onclick="começarQuiz()">Começar Quiz</button>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="quiz" style="display:none;">
+      <div class="placar" id="placar"></div>
+      <div class="pergunta" id="pergunta"></div>
+      <div id="opcoes"></div>
+      <button class="btn" id="btnProxima" onclick="proximaPergunta()" disabled>Próxima</button>
+      <button class="btn" onclick="reiniciar()">Reiniciar</button>
+      <div class="resultado" id="resultado"></div>
+    </div>
+  </div>
+
+  <script>
+    const perguntas = [
+      // --- MATEMÁTICA ---
+      { pergunta: "Quanto é 2 + 2?", opcoes:["3","4","5","22"], certa:1, materia:"matematica" },
+      { pergunta: "Qual é o valor de x na equação 3x + 5 = 14?", opcoes:["2","3","4","5"], certa:1, materia:"matematica" },
+      { pergunta: "Qual é o perímetro de um quadrado de lado 6 cm?", opcoes:["12 cm","18 cm","24 cm","36 cm"], certa:2, materia:"matematica" },
+      { pergunta: "Qual é a área de um triângulo com base 10 cm e altura 5 cm?", opcoes:["25 cm²","30 cm²","50 cm²","15 cm²"], certa:0, materia:"matematica" },
+      { pergunta: "Resolva: 2 × (3 + 4)", opcoes:["10","12","14","16"], certa:2, materia:"matematica" },
+      { pergunta: "Qual é o resultado de 5²?", opcoes:["10","15","25","30"], certa:2, materia:"matematica" },
+      { pergunta: "Um carro percorre 150 km em 3 horas. Qual a velocidade média?", opcoes:["50 km/h","45 km/h","60 km/h","55 km/h"], certa:0, materia:"matematica" },
+      { pergunta: "Se um número é múltiplo de 3 e 4, ele é múltiplo de?", opcoes:["12","6","7","9"], certa:1, materia:"matematica" },
+
+      // --- PORTUGUÊS ---
+      { pergunta: "Qual é o sujeito da frase: 'O aluno estudou para a prova'?", opcoes:["O aluno","estudou","para a prova","nenhum"], certa:0, materia:"portugues" },
+      { pergunta: "Assinale a frase que está escrita corretamente:", opcoes:["Eu vô ao mercado","Eu vou ao mercado","Eu vou ao mercado.","Eu vo ao mercado"], certa:1, materia:"portugues" },
+      { pergunta: "Qual é o significado da palavra 'benevolente'?", opcoes:["Malicioso","Generoso","Indiferente","Triste"], certa:1, materia:"portugues" },
+      { pergunta: "Qual figura de linguagem é usada em: 'O vento sussurrou segredos'?", opcoes:["Metáfora","Personificação","Hipérbole","Ironia"], certa:1, materia:"portugues" },
+      { pergunta: "Qual é o tempo verbal da frase: 'Eu tinha estudado antes da prova'?", opcoes:["Pretérito perfeito","Pretérito mais-que-perfeito","Futuro do presente","Presente do indicativo"], certa:1, materia:"portugues" },
+      { pergunta: "Qual dessas palavras é um advérbio?", opcoes:["Rápido","Lentamente","Bonito","Correr"], certa:1, materia:"portugues" },
+      { pergunta: "Qual frase está na voz passiva?", opcoes:["O professor explicou a matéria","A matéria foi explicada pelo professor","Estudei para a prova","Eles jogam futebol"], certa:1, materia:"portugues" },
+      { pergunta: "Qual é o antônimo de 'feliz'?", opcoes:["Triste","Alegre","Contente","Radiante"], certa:0, materia:"portugues" },
+
+      // --- FÍSICA ---
+      { pergunta: "Qual é a unidade de medida da força no SI?", opcoes:["Newton","Joule","Watt","Pascal"], certa:0, materia:"fisica" },
+      { pergunta: "Um corpo em movimento retilíneo uniforme tem aceleração:", opcoes:["Zero","Constante","Variável","Indefinida"], certa:0, materia:"fisica" },
+      { pergunta: "Qual é a fórmula da velocidade média?", opcoes:["v = ΔS/Δt","v = m × a","v = F × d","v = S × t"], certa:0, materia:"fisica" },
+      { pergunta: "A energia cinética depende de:", opcoes:["Velocidade e massa","Altura e massa","Tempo e distância","Força e aceleração"], certa:0, materia:"fisica" },
+      { pergunta: "Se um corpo de 2 kg recebe uma força de 10 N, qual é a sua aceleração?", opcoes:["2 m/s²","5 m/s²","10 m/s²","20 m/s²"], certa:1, materia:"fisica" },
+      { pergunta: "A lei da inércia foi formulada por:", opcoes:["Galileu","Newton","Einstein","Aristóteles"], certa:1, materia:"fisica" },
+      { pergunta: "Qual é a unidade de energia no SI?", opcoes:["Joule","Newton","Watt","Pascal"], certa:0, materia:"fisica" },
+      { pergunta: "O que é a aceleração da gravidade na Terra?", opcoes:["10 m/s²","9,8 m/s²","9 m/s²","8 m/s²"], certa:1, materia:"fisica" },
+
+      // --- PESSOAL ---
+      { pergunta: "Qual é o nome completo do dono do quiz?", opcoes:["Jorge Silva","Jorge Fernandes Sampaio","Jorge Fernandes Silva Sampaio","Jorge Sampaio"], certa:2, materia:"pessoal" },
+      { pergunta: "Em que dia nasceu Jorge?", opcoes:["22/02/2011","11/02/2010","22/02/2010","02/02/2011"], certa:0, materia:"pessoal" },
+      { pergunta: "Qual é a cor favorita de Jorge?", opcoes:["Vermelho e Preto","Azul e Preto","Azul e Branco","Preto e Verde"], certa:1, materia:"pessoal" },
+      { pergunta: "Qual destes esportes Jorge gosta?", opcoes:["Futebol","Muay Thai","Basquete","Judô"], certa:1, materia:"pessoal" },
+      { pergunta: "Quantos anos Jorge tem em 2026?", opcoes:["14","15","16","13"], certa:0, materia:"pessoal" },
+      { pergunta: "Jorge prefere dia ou noite?", opcoes:["Dia","Noite","Ambos","Nenhum"], certa:1, materia:"pessoal" }
+    ];
+
+    let indice = 0;
+    let pontos = 0;
+    let respondeu = false;
+
+    function começarQuiz() {
+      document.getElementById("telaInicial").style.display = "none";
+      document.getElementById("quiz").style.display = "block";
+      mostrarPergunta();
+    }
+
+    function atualizarPlacar() {
+      document.getElementById("placar").innerText =
+        "Pergunta " + (indice + 1) + " de " + perguntas.length;
+    }
+
+    function mostrarPergunta() {
+      document.getElementById("resultado").innerText = "";
+      document.getElementById("btnProxima").disabled = true;
+      respondeu = false;
+
+      atualizarPlacar();
+
+      const p = perguntas[indice];
+      const divPergunta = document.getElementById("pergunta");
+      divPergunta.innerText = p.pergunta;
+      divPergunta.className = "pergunta " + p.materia;
+
+      const divOpcoes = document.getElementById("opcoes");
+      divOpcoes.innerHTML = "";
+
+      for (let i = 0; i < p.opcoes.length; i++) {
+        const botao = document.createElement("button");
+        botao.className = "opcao";
+        botao.innerText = p.opcoes[i];
+        botao.onclick = function () { responder(i); };
+        divOpcoes.appendChild(botao);
+      }
+    }
+
+    function travarOpcoes() {
+      const botoes = document.querySelectorAll("#opcoes button");
+      botoes.forEach(btn => {
+        btn.disabled = true;
+        btn.style.cursor = "default";
+      });
+    }
+
+    function pintarRespostas(opcaoEscolhida) {
+      const botoes = document.querySelectorAll("#opcoes button");
+      botoes[perguntas[indice].certa].style.background = "#2ecc71";
+      botoes[perguntas[indice].certa].style.color = "black";
+      botoes[perguntas[indice].certa].style.fontWeight = "bold";
+
+      if (opcaoEscolhida !== perguntas[indice].certa) {
+        botoes[opcaoEscolhida].style.background = "#e74c3c";
+        botoes[opcaoEscolhida].style.color = "white";
+        botoes[opcaoEscolhida].style.fontWeight = "bold";
+      }
+    }
+
+    function responder(opcaoEscolhida) {
+      if (respondeu) return;
+      respondeu = true;
+
+      const p = perguntas[indice];
+      if (opcaoEscolhida === p.certa) {
+        pontos++;
+        document.getElementById("resultado").innerText = "Acertou 😄";
+      } else {
+        const respostaCerta = p.opcoes[p.certa];
+        document.getElementById("resultado").innerText =
+          "Errou 😅 A resposta certa era: " + respostaCerta;
+      }
+
+      pintarRespostas(opcaoEscolhida);
+      travarOpcoes();
+
+      document.getElementById("btnProxima").disabled = false;
+    }
+
+    function proximaPergunta() {
+      indice++;
+      if (indice < perguntas.length) {
+        mostrarPergunta();
+      } else {
+        mostrarResultadoFinal();
+      }
+    }
+
+    function mostrarResultadoFinal() {
+      document.getElementById("placar").innerText = "";
+      document.getElementById("pergunta").innerText = "Fim do quiz!";
+      document.getElementById("opcoes").innerHTML = "";
+      document.getElementById("btnProxima").style.display = "none";
+      document.getElementById("resultado").innerText =
+        "Você acertou " + pontos + " de " + perguntas.length + " perguntas. 😄";
+    }
+
+    function reiniciar() {
+      indice = 0;
+      pontos = 0;
+      document.getElementById("btnProxima").style.display = "block";
+      mostrarPergunta();
+    }
+  </script>
+</body>
+</html>
